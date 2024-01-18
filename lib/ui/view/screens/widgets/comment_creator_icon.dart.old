@@ -1,0 +1,24 @@
+import 'package:flutter/material.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'package:popover/popover.dart';
+import 'package:test0/ui/view/screens/widgets/comment_creator_dialog.dart';
+
+class CommentCreatorIcon extends StatelessWidget {
+  final ObjectId id;
+  const CommentCreatorIcon({Key? key, required this.id}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: Icon(Icons.add),
+      onTap: () {
+        showPopover(
+          context: context,
+          bodyBuilder: (context) => CommentCreatorDialog(
+            id, Function('');
+          ),
+        );
+      },
+    );
+  }
+}

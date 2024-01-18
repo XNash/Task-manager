@@ -1,0 +1,111 @@
+import 'package:mongo_dart/mongo_dart.dart';
+import 'package:test0/data/database/online/dbHelper/constants.dart';
+import 'package:test0/data/model/task_model.dart';
+
+import '../../../model/user_model.dart';
+
+class MongoDatabase {
+  /// Methode pour gerer la connection avec la base de données
+
+  static var _db, _tasks, _users;
+
+  static _connect() async {
+    _db = Db(MONGO_CONN_URL);
+    await _db.open();
+    _tasks = _db.collection(TASKS_COLLECTION);
+    _users = _db.collection(USERS_COLLECTION);
+  }
+
+  MongoDatabase() {
+    _connect();
+  }
+
+  /// Methodes pour gerer les utilisateurs
+
+  // **Create**
+  // static createUser(Object user) async {
+  //   _connect();
+  //   await _users.insertOne({
+  //     'firstname': user.firstname,
+  //     'lastname': user.lastname,
+  //     'phone': user.phone,
+  //     'email': user.email,
+  //     'passwd': user.passwd
+  //   });
+  // }
+
+  // **Read**
+
+  static getAllUsers() async {
+    _connect();
+    var userList = await _users.find().toList();
+    return userList;
+  }
+
+  static findUser(String field1, value1, String? field2, var value2) async {
+    _connect();
+    var user;
+    if (field2 == null) {
+      user = await _users.findOne(where.eq(field1, value1));
+    } else {
+      user = await _users.findOne(where.eq(field1, value1).eq(field2, value2));
+    }
+    return user;
+  }
+
+  // **Update**
+
+  static updateUser(id, String field, value) async {
+    _connect();
+    await _users.updateOne(
+        where.eq('id', id), ModifierBuilder().set(field, value));
+  }
+
+  // **Delete**
+  static deleteUser(id) async {
+    _connect();
+    await _users.deleteOne(where.eq('id', id));
+  }
+
+  /// Methodes pour gerer les taches
+
+  // **Create**
+  static createTask(TaskModel task) async {
+    _connect();
+    await _tasks.insertOne({
+      'title': task.title,
+      'description': task.description,
+      'status': task.status,
+      'due_date': task.dueDate,
+      'assigned_to': task.assignedTo,
+      'author': task.author,
+      'comments': task.comment,
+    });
+  }
+
+  // **Read**
+  static getAllTasks() async {
+    _connect();
+    return await _tasks.find({}).toList();
+  }
+
+  static getOneTask(String field, value) async {
+    _connect();
+    return await _tasks.findOne(where.eq(field, value));
+  }
+
+  // **Update**
+  static updateTask(id, String field, value) async {
+    _connect();
+    await _tasks.updateOne(
+      where.eq('id', id),
+      ModifierBuilder().set(field, value),
+    );
+  }
+
+  // **Delete**
+  static deleteTask(id) {
+    _connect();
+    _tasks.deleteOne(where.eq('id', id));
+  }
+}
